@@ -1,0 +1,44 @@
+use DWH
+
+CREATE TABLE DimCustomer (
+	Customer_Id INT PRIMARY KEY NOT NULL,
+	Customer_Name VARCHAR(50) NOT NULL,
+	Address VARCHAR(50) NOT NULL,
+	City_Name VARCHAR(50) NOT NULL,
+	State_Name VARCHAR(50) NOT NULL,
+	Age INT NOT NULL,
+	Gender VARCHAR(50) NOT NULL,
+	Email VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE DimAccount (
+	Account_Id INT PRIMARY KEY NOT NULL,
+	Customer_Id INT NOT NULL,
+	Account_Type VARCHAR(50) NOT NULL,
+	Balance INT NOT NULL,
+	Date_Opened DATETIME NOT NULL,
+	Status VARCHAR(50) NOT NULL,
+	FOREIGN KEY (Customer_Id) REFERENCES DimCustomer(Customer_Id)
+);
+
+CREATE TABLE DimBranch (
+	Branch_Id INT PRIMARY KEY NOT NULL,
+	Branch_Name VARCHAR(50) NOT NULL,
+	Branch_Location VARCHAR(50) NOT NULL,
+);
+
+CREATE TABLE FactTransaction (
+	Transaction_Id INT PRIMARY KEY NOT NULL,
+	Account_Id INT NOT NULL,
+	Transaction_Date DATETIME2 NOT NULL,
+	Amount DECIMAL NOT NULL,
+	Transaction_Type VARCHAR(50) NOT NULL,
+	Branch_Id INT NOT NULL,
+	FOREIGN KEY (Account_Id) REFERENCES DimAccount(Account_Id),
+	FOREIGN KEY (Branch_Id) REFERENCES DimBranch(Branch_Id)
+);
+
+SELECT * FROM DimCustomer;
+SELECT * FROM DimAccount;
+SELECT * FROM DimBranch;
+SELECT * FROM FactTransaction;
