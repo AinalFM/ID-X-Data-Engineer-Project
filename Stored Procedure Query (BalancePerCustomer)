@@ -1,0 +1,42 @@
+CREATE PROCEDURE BalancePerCustomer
+    @name VARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        c.CustomerName,
+        a.AccountType,
+        a.Balance,
+        (a.Balance + 
+            ISNULL(
+                SUM(
+                    CASE 
+                        WHEN ft.Transaction_Type = 'Deposit' THEN ft.Amount
+                        ELSE -ft.Amount
+                    END
+                ), 0
+            )
+        ) AS CurrentBalance
+    FROM 
+        DimCustomer c
+    INNER JOIN 
+        DimAccount a ON c.Customer_Id = a.Customer_Id
+    LEFT JOIN 
+        FactTransaction ft ON a.Account_Id = ft.Account_Id
+    WHERE 
+        c.Customer_Name LIKE '%' + @name + '%'
+        AND a.Status = 'Active'
+    GROUP BY 
+        c.Customer_Name,
+        a.Account_Type,
+        a.Balance,
+        a.Account_Id
+    ORDER BY 
+        c.Customer_Name,
+        a.Account_Type;
+END;
+GO
+
+-- For the execution:
+EXEC BalancePerCustomer @name='Shelly'
