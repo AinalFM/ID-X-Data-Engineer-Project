@@ -1,0 +1,22 @@
+CREATE PROCEDURE DailyTransaction
+    @start_date DATE,
+    @end_date DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        CONVERT(DATE, Transaction_Date) AS [Date],
+        COUNT(*) AS TotalTransactions,
+        SUM(Amount) AS TotalAmount
+    FROM 
+        FactTransaction
+    WHERE 
+        Transaction_Date BETWEEN @start_date AND @end_date
+    GROUP BY 
+        CONVERT(DATE, Transaction_Date)
+    ORDER BY 
+        [Date] ASC;
+END;
+GO
+EXEC DailyTransaction @start_date='2024-01-18', @end_date='2024-01-21'
